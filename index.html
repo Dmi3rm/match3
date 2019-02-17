@@ -3,16 +3,25 @@
 </head>
 <body>
   <div id="app">
-    <div>
-      <label for="rowCount">Число строк</label>
-      <input name="rowCount" type="number" value="10" />
+    <div id="settingsDiv">
+      <div>
+        <label for="rowCount">Число строк</label>
+        <input name="rowCount" id="rowCountInput" type="number" value="10" />
+      </div>
+      <div>
+        <label for="columnCount">Число столбцов</label>
+        <input name="columnCount" id="columnCountInput" type="number" value="10" />
+      </div>
+      <div>
+        <button id="setupBtn">Применить и начать</button>
+      </div>
     </div>
-    <div>
-      <label for="columnCount">Число столбцов</label>
-      <input name="columnCount" type="number" value="10" />
-    </div>
-    <div>
-      <button id="setupBtn">Применить и начать</button>
+    <div id="scoreDiv">
+      <div>
+        <label>Набрано очков</label>
+        <br />
+        <span id="scoreSpan">0</span>
+      </div>
     </div>
   </div>
 
@@ -20,11 +29,40 @@
     div {
       margin-bottom: 10px;
     }
+
     label {
       display: block;
       width: 130px;
       float: left;
     }
+
+    input {
+      width: 50px;
+    }
+
+    #app {
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: row;
+    }
+
+    #settingsDiv {
+      border-right: 2px solid black;
+      padding-right: 10px;
+      margin-right:10px;
+    }
+
+    #scoreDiv {
+      text-align: center;
+    }
+
+    #scoreSpan {
+      display: block;
+      margin-top: 10px;
+      font-weight: 700;
+      font-size: 20px;
+    }
   </style>
 </body>
+
 </html>
