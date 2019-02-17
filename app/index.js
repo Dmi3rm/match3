@@ -46,6 +46,7 @@ function setup(rowCount, columnCount) {
     if (app != null) {
         document.body.removeChild(app.view);
     }
+    scoreSpan.textContent = 0;
     let canvasHeightPx = rowCount*(cellSizePx+borderPx)+borderPx;
     let canvasWidthPx = columnCount*(cellSizePx+borderPx)+borderPx;
     app = new PIXI.Application(canvasWidthPx, canvasHeightPx, {backgroundColor: 0x222222});
