@@ -19,6 +19,8 @@
         "no-plusplus": [2, { "allowForLoopAfterthoughts": true }],
         "space-infix-ops": "off",
         "radix": "off",
+        "no-new": "off",
+        "import/no-unresolved": "off",
         "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
     }
 }

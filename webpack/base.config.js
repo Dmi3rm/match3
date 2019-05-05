@@ -2,6 +2,7 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
   entry: './app/index.js',
@@ -25,13 +26,18 @@ module.exports = {
           use: ['css-loader', 'sass-loader'],
         }),
       },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+      },
     ],
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '../app'),
+      vue$: 'vue/dist/vue.esm.js',
     },
-    extensions: ['*', '.js', '.json'],
+    extensions: ['*', '.js', '.vue', '.json'],
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -46,5 +52,6 @@ module.exports = {
         ignore: ['.*'],
       },
     ]),
+    new VueLoaderPlugin(),
   ],
 };
