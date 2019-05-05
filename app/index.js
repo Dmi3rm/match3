@@ -14,14 +14,14 @@ let field = null;
 
 function setup(rowCount, columnCount) {
   if (app != null) {
-    document.body.removeChild(app.view);
+    appDiv.removeChild(app.view);
   }
   const scoreSpan = document.getElementById('scoreSpan');
   scoreSpan.textContent = 0;
   const canvasHeightPx = rowCount*(cellSizePx+borderPx) + borderPx;
   const canvasWidthPx = columnCount*(cellSizePx+borderPx) + borderPx;
   app = new PIXI.Application(canvasWidthPx, canvasHeightPx, { backgroundColor: 0x222222 });
-  document.body.appendChild(app.view);
+  appDiv.appendChild(app.view);
   let scoreTotal = 0;
   field = new Field(cellSizePx, rowCount, columnCount, borderPx, (score) => {
     scoreTotal += score;
