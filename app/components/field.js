@@ -93,15 +93,17 @@ export default class Field extends PIXI.Container {
 
         let anyDestroyed = false;
         for (const rowGroup of fallenByRow) {
-          let destroyedTotal = [];
+          let destroyingTotal = [];
           for (const shape of rowGroup.value) {
-            const destroyed = this.destroyMatches(shape.row, shape.column);
-            if (destroyed) {
-              destroyedTotal = destroyedTotal.concat(destroyed);
+            const destroying = this.getShapesToDestroy(shape.row, shape.column);
+            if (destroying) {
+              destroyingTotal = destroyingTotal.concat(destroying);
             }
           }
-          if (destroyedTotal && destroyedTotal.length > 0) {
+          if (destroyingTotal && destroyingTotal.length > 0) {
             anyDestroyed = true;
+            const destroyedTotal = this.destroyShapes(destroyingTotal);
+            this.scoreDestroyed(destroyedTotal);
             this.fillEmptyes(destroyedTotal);
             break;
           }
@@ -196,7 +198,7 @@ export default class Field extends PIXI.Container {
   }
 
 
-  destroyMatches(row, column) {
+  getShapesToDestroy(row, column) {
     const destroyed = [];
     const center = this.getCellType(row, column);
 
@@ -237,23 +239,35 @@ export default class Field extends PIXI.Container {
     if (destroyed.length) {
       destroyed.push(this.cells[row][column]);
     }
+    return destroyed;
+  }
 
+  destroyShapes(destroying) {
     const destroyedShapes = [];
-    for (const destroyedShape of destroyed) {
+    for (const destroyedShape of destroying) {
       if (this.cells[destroyedShape.row][destroyedShape.column]) {
         destroyedShapes.push(this.cells[destroyedShape.row][destroyedShape.column]);
         this.cells[destroyedShape.row][destroyedShape.column] = null;
         this.removeChild(destroyedShape);
       }
     }
+    return destroyedShapes;
+  }
 
+  scoreDestroyed(destroyedShapes) {
     if (destroyedShapes.length > 0) {
       const destroyedScore = destroyedShapes.reduce((total, shapeDstr) => { 
         return total + ShapeTypeEnum.properties[shapeDstr.shapeType].rate;
       }, 0);
       this._scoreCallback(destroyedScore);
     }
+  }
 
+
+  destroyMatches(row, column) {
+    const destroying = this.getShapesToDestroy(row, column);
+    const destroyedShapes = this.destroyShapes(destroying);
+    this.scoreDestroyed(destroyedShapes);
     return destroyedShapes;
   }
 

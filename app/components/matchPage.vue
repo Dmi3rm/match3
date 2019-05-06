@@ -2,31 +2,38 @@
   <div id="appDiv" ref="appDiv">
     <div id="stretchDiv" ref="stretchDiv">
       <div id="headerDiv">
-        <!-- <div id="settingsDiv">
-        <div>
-          <label for="rowCount">Rows</label>
-          <input name="rowCount" type="number" v-model.number="rowCount" />
-        </div>
-        <div>
-          <label for="columnCount">Columns</label>
-          <input name="columnCount" type="number" v-model.number="columnCount" />
-        </div>
-        <div>
-          <button id="setupBtn" @click="setup">New game</button>
-        </div>
-        </div>-->
         <div>
           <span class="importantSpan">Match 3</span>
         </div>
         <div>
-            <label>Score:</label>
-            <span class="importantSpan">{{scoreSpan}}</span>
+          <label>Score:</label>
+          <span class="importantSpan">{{scoreSpan}}</span>
         </div>
         <div id="settingsBtnDiv">
-          <span class="importantSpan"><i class="fa fa-bars"></i></span>
+          <span @click="openSettings" class="importantSpan">
+            <i class="fa fa-bars"></i>
+          </span>
         </div>
       </div>
     </div>
+    <modal name="settingsModal" :width="200" :height="140">
+      <div id="settingsDiv">
+        <div id="settingsHeaderDiv">
+          <span>Settings</span>
+        </div>
+        <div>
+          <label for="rowCount">Rows</label>
+          <input name="rowCount" type="number" v-model.number="rowCount">
+        </div>
+        <div>
+          <label for="columnCount">Columns</label>
+          <input name="columnCount" type="number" v-model.number="columnCount">
+        </div>
+        <div>
+          <button id="setupBtn" @click="setup">Ok</button>
+        </div>
+      </div>
+    </modal>
   </div>
 </template>
 
@@ -38,7 +45,7 @@
 import * as PIXI from "pixi.js";
 import Field from "./field";
 import ShapeTypeEnum from "./shapeTypes";
-import 'font-awesome/css/font-awesome.min.css';
+import "font-awesome/css/font-awesome.min.css";
 
 let cellSizePx = 50;
 const borderPx = 2;
@@ -57,6 +64,12 @@ export default {
     };
   },
   methods: {
+    openSettings() {
+      this.$modal.show("settingsModal");
+    },
+    closeSettings() {
+      this.$modal.hide('settingsModal');
+    },
     verifyInput() {
       if (this.rowCount < ROW_COUNT_MIN) {
         this.rowCount = ROW_COUNT_MIN;
@@ -83,7 +96,7 @@ export default {
       const canvasWidthPx =
         this.columnCount * (cellSizePx + borderPx) + borderPx;
       this.app = new PIXI.Application(canvasWidthPx, canvasHeightPx, {
-        backgroundColor: 0xFFFFFF
+        backgroundColor: 0xffffff
       });
       this.$refs.stretchDiv.appendChild(this.app.view);
       const field = new Field(
@@ -96,6 +109,7 @@ export default {
         }
       );
       this.app.stage.addChild(field);
+      this.closeSettings();
     }
   },
   mounted() {

@@ -8,11 +8,6 @@ input {
   align-items: center;
   width: 100%;
   height: 100%;
-  /* background-color: #F4FF96; */
-}
-
-#stretchDiv {
-  
 }
 
 #headerDiv {
@@ -37,4 +32,26 @@ input {
 .importantSpan {
   font-weight: 700;
   font-size: 20px;
+}
+
+#settingsDiv {
+  display: flex;
+  flex-direction: column;
+}
+
+#settingsDiv label {
+  display: block;
+  width: 70px;
+  float: left;
+}
+
+#settingsHeaderDiv {
+  background-color: #22D12B;
+  text-align: center;
+  padding: 5px;
+}
+
+#settingsDiv div {
+  margin-bottom: 7px;
+  padding-left: 7px;
 }

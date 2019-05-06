@@ -34,8 +34,8 @@ class Shape extends PIXI.Sprite {
 
   tick() {
     if (this.y < this.yto) {
-      this.y = (this.y + this._fallSpeed) > this.yto ? this.yto : this.y + this._fallSpeed;
       this._fallSpeed+=this._acceleration;
+      this.y = (this.y + this._fallSpeed) > this.yto ? this.yto : this.y + this._fallSpeed;
       return true;
     }
     this._fallSpeed=0;
