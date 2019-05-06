@@ -1,13 +1,3 @@
-div {
-  margin-bottom: 10px;
-}
-
-label {
-  display: block;
-  width: 130px;
-  float: left;
-}
-
 input {
   width: 50px;
 }
@@ -16,28 +6,35 @@ input {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  height: 100%;
+  /* background-color: #F4FF96; */
+}
+
+#stretchDiv {
+  
 }
 
 #headerDiv {
-  margin-bottom: 10px;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  background-color: #22D12B;
+  padding-top:10px;
+  padding-bottom: 10px;
+  align-items: center;
 }
 
-#settingsDiv {
-  border-right: 2px solid black;
-  padding-right: 10px;
+#headerDiv div {
   margin-right: 10px;
+  margin-left: 10px;
 }
 
-#scoreDiv {
-  text-align: center;
+#settingsBtnDiv {
+  flex-grow: 1;
+  text-align: right;
 }
 
-#scoreSpan {
-  display: block;
-  margin-top: 10px;
+.importantSpan {
   font-weight: 700;
   font-size: 20px;
 }

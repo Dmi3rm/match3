@@ -10,7 +10,8 @@ class Shape extends PIXI.Sprite {
     this.width = sidePx;
     this.height = sidePx;
     this._borderPx = borderPx;
-    this._fallSpeed = 3;
+    this._fallSpeed = 0;
+    this._acceleration = 0.15;
     this.row = 0;
     this.column = 0;
     this.yto = 0;
@@ -31,12 +32,13 @@ class Shape extends PIXI.Sprite {
     this.yto = row * (this.height + this._borderPx) + this._borderPx;
   }
 
-
   tick() {
     if (this.y < this.yto) {
       this.y = (this.y + this._fallSpeed) > this.yto ? this.yto : this.y + this._fallSpeed;
+      this._fallSpeed+=this._acceleration;
       return true;
     }
+    this._fallSpeed=0;
     return false;
   }
 
