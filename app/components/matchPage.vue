@@ -1,7 +1,7 @@
 <template>
   <div id="appDiv" ref="appDiv">
     <div id="stretchDiv" ref="stretchDiv">
-      <div id="headerDiv">
+      <div id="headerDiv" ref="headerDiv">
         <div>
           <span class="importantSpan">Match 3</span>
         </div>
@@ -47,12 +47,10 @@ import Field from "./field";
 import ShapeTypeEnum from "./shapeTypes";
 import "font-awesome/css/font-awesome.min.css";
 
-let cellSizePx = 50;
+let cellSizePx = 45;
 const borderPx = 2;
 const ROW_COUNT_MIN = 5;
-const ROW_COUNT_MAX = 30;
 const COLUMN_COUNT_MIN = 5;
-const COLUMN_COUNT_MAX = 30;
 
 export default {
   data() {
@@ -74,29 +72,31 @@ export default {
       if (this.rowCount < ROW_COUNT_MIN) {
         this.rowCount = ROW_COUNT_MIN;
       }
-      if (this.rowCount > ROW_COUNT_MAX) {
-        this.rowCount = ROW_COUNT_MAX;
-      }
       if (this.columnCount < COLUMN_COUNT_MIN) {
         this.columnCount = COLUMN_COUNT_MIN;
       }
-      if (this.columnCount > COLUMN_COUNT_MAX) {
-        this.columnCount = COLUMN_COUNT_MAX;
-      }
     },
-    setOptimalParams() {},
+    setOptimalParams() {
+      //debugger;
+      const appDivHeight = this.$refs.appDiv.offsetHeight;
+      const navHeight = this.$refs.headerDiv.offsetHeight;
+      const freeHeight = appDivHeight - navHeight - 4;
+      const freeWidth = this.$refs.appDiv.offsetWidth - 4;
+      const rows = Math.floor(freeHeight / (cellSizePx+borderPx));
+      const columns = Math.floor(freeWidth / (cellSizePx+borderPx));
+      this.rowCount = rows;
+      this.columnCount = columns;
+    },
     setup() {
       this.verifyInput();
-      this.setOptimalParams();
       if (this.app != null) {
         this.$refs.stretchDiv.removeChild(this.app.view);
       }
       this.scoreSpan = 0;
       const canvasHeightPx = this.rowCount * (cellSizePx + borderPx) + borderPx;
-      const canvasWidthPx =
-        this.columnCount * (cellSizePx + borderPx) + borderPx;
+      const canvasWidthPx = this.columnCount * (cellSizePx + borderPx) + borderPx;
       this.app = new PIXI.Application(canvasWidthPx, canvasHeightPx, {
-        backgroundColor: 0xffffff
+        backgroundColor: 0x404040
       });
       this.$refs.stretchDiv.appendChild(this.app.view);
       const field = new Field(
@@ -120,6 +120,7 @@ export default {
       .add(ShapeTypeEnum.properties[ShapeTypeEnum.PENTAGON].image)
       .add(ShapeTypeEnum.properties[ShapeTypeEnum.HEXAGON].image)
       .load(() => {
+        this.setOptimalParams();
         this.setup();
       });
   }
