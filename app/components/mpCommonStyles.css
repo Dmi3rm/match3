@@ -58,16 +58,17 @@ div {
   flex-direction: column;
   height: 100%;
   background-color: #404040;
+  border: 2px solid black;
 }
 
 #settingsDiv label {
   display: block;
-  width: 70px;
+  width: 120px;
   float: left;
 }
 
 #settingsHeaderDiv {
-  /* background-color: #22D12B; */
+  background-color: black;
   text-align: center;
   padding: 5px;
   font-weight: 600;

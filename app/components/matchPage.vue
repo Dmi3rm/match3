@@ -3,7 +3,7 @@
     <div id="stretchDiv" ref="stretchDiv">
       <div id="headerDiv" ref="headerDiv">
         <div>
-          <span class="importantSpan">Match 3</span>
+          <span class="importantSpan">MATCH 3</span>
         </div>
         <div>
           <label>Score:</label>
@@ -16,18 +16,28 @@
         </div>
       </div>
     </div>
-    <modal name="settingsModal" :width="200" :height="140">
+    <modal name="settingsModal" :width="210" :height="210">
       <div id="settingsDiv">
         <div id="settingsHeaderDiv">
           <span>Settings</span>
         </div>
         <div>
+          <label for="cellSizePx">Shape size (px)</label>
+          <input name="cellSizePx" type="number" v-model.number="cellSizePx" />
+        </div>
+        <div>
+          <label>Set board size automatically</label>
+          <input type="checkbox" v-model="autoBoardSize" />
+        </div>
+        <div>
           <label for="rowCount">Rows</label>
-          <input name="rowCount" type="number" v-model.number="rowCount">
+          <span v-if="autoBoardSize">{{rowCount}}</span>
+          <input v-else name="rowCount" type="number" v-model.number="rowCount" />
         </div>
         <div>
           <label for="columnCount">Columns</label>
-          <input name="columnCount" type="number" v-model.number="columnCount">
+          <span v-if="autoBoardSize">{{columnCount}}</span>
+          <input v-else name="columnCount" type="number" v-model.number="columnCount" />
         </div>
         <div>
           <button id="setupBtn" @click="setup">Ok</button>
@@ -47,10 +57,10 @@ import Field from "./field";
 import ShapeTypeEnum from "./shapeTypes";
 import "font-awesome/css/font-awesome.min.css";
 
-let cellSizePx = 45;
 const borderPx = 2;
 const ROW_COUNT_MIN = 5;
 const COLUMN_COUNT_MIN = 5;
+const CELL_SIZE_MIN = 5;
 
 export default {
   data() {
@@ -58,6 +68,8 @@ export default {
       rowCount: 10,
       columnCount: 10,
       scoreSpan: 0,
+      cellSizePx: 45,
+      autoBoardSize: true,
       app: null
     };
   },
@@ -69,6 +81,9 @@ export default {
       this.$modal.hide('settingsModal');
     },
     verifyInput() {
+      if (this.cellSizePx < CELL_SIZE_MIN) {
+        this.cellSizePx = CELL_SIZE_MIN;
+      }
       if (this.rowCount < ROW_COUNT_MIN) {
         this.rowCount = ROW_COUNT_MIN;
       }
@@ -82,25 +97,32 @@ export default {
       const navHeight = this.$refs.headerDiv.offsetHeight;
       const freeHeight = appDivHeight - navHeight - 4;
       const freeWidth = this.$refs.appDiv.offsetWidth - 4;
-      const rows = Math.floor(freeHeight / (cellSizePx+borderPx));
-      const columns = Math.floor(freeWidth / (cellSizePx+borderPx));
+      const rows = Math.floor(freeHeight / (this.cellSizePx+borderPx));
+      const columns = Math.floor(freeWidth / (this.cellSizePx+borderPx));
       this.rowCount = rows;
       this.columnCount = columns;
     },
     setup() {
-      this.verifyInput();
+      if (this.autoBoardSize)
+      {
+        this.setOptimalParams();
+      }
+      else
+      {
+        this.verifyInput();
+      }
       if (this.app != null) {
         this.$refs.stretchDiv.removeChild(this.app.view);
       }
       this.scoreSpan = 0;
-      const canvasHeightPx = this.rowCount * (cellSizePx + borderPx) + borderPx;
-      const canvasWidthPx = this.columnCount * (cellSizePx + borderPx) + borderPx;
+      const canvasHeightPx = this.rowCount * (this.cellSizePx + borderPx) + borderPx;
+      const canvasWidthPx = this.columnCount * (this.cellSizePx + borderPx) + borderPx;
       this.app = new PIXI.Application(canvasWidthPx, canvasHeightPx, {
         backgroundColor: 0x404040
       });
       this.$refs.stretchDiv.appendChild(this.app.view);
       const field = new Field(
-        cellSizePx,
+        this.cellSizePx,
         this.rowCount,
         this.columnCount,
         borderPx,
