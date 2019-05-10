@@ -16,18 +16,26 @@ export default class Field extends PIXI.Container {
     this.interactive = true;
     this.isAnimating = false;
     this.shapesToFall = null;
-    this.on('pointerdown', this.onShapeClicked);
+    // this.on('pointerdown', this.onShapeClicked);
     this.setup();
   }
 
-  getCellType(row, column) {
+  getShape(row, column) {
     if (row > -1 && column > -1 && row < this._rowCount && column < this._columnCount) {
       if (this.cells[row][column]) {
-        return this.cells[row][column].shapeType;
+        return this.cells[row][column];
       }
       return null;
     }
     return null;
+  }
+
+  getCellType(row, column) {
+    const shape = this.getShape(row, column);
+    if (!shape) {
+      return null;
+    }
+    return shape.shapeType;
   }
 
   getAllowedShapeTypes(row, column) {
@@ -58,10 +66,11 @@ export default class Field extends PIXI.Container {
   }
 
   setup() {
+    const checkMatchBind = this.checkMatch.bind(this);
     for (let row = 0; row < this._rowCount; row++) {
       for (let column = 0; column < this._columnCount; column++) {
         const shapeType = this.getRandomAllowedShapeType(row, column);
-        const shape = new Shape(shapeType, this._cellSizePx, this._borderPx);
+        const shape = new Shape(shapeType, this._cellSizePx, this._borderPx, checkMatchBind);
         shape.setY(row);
         shape.setX(column);
         this.cells[row][column] = shape;
@@ -87,7 +96,7 @@ export default class Field extends PIXI.Container {
         // all shapes just fallen down, check for matches
         let fallenByRow = this.shapesToFall.reduce((fallenMap, e) =>
           fallenMap.set(e.row, [...fallenMap.get(e.row) || [], e]),
-        new Map());
+          new Map());
         fallenByRow = Array.from(fallenByRow).map(([key, value]) => ({ key, value }))
           .sort((fallenRow1, fallenRow2) => (fallenRow1.key > fallenRow2.key ? 1 : -1));
 
@@ -116,6 +125,7 @@ export default class Field extends PIXI.Container {
       // generate new
       if (!isFalling && this.shapesToFall === null) {
         this.shapesToFall = [];
+        const checkMatchBind = this.checkMatch.bind(this);
         for (let row = 0; row < this._rowCount; row++) {
           let rowConstainsEmpty = false;
           for (let column = 0; column < this._columnCount; column++) {
@@ -123,7 +133,7 @@ export default class Field extends PIXI.Container {
             if (shape === null) {
               rowConstainsEmpty = true;
               const shapeType = this.getRandomAllowedShapeType(row, column);
-              shape = new Shape(shapeType, this._cellSizePx, this._borderPx);
+              shape = new Shape(shapeType, this._cellSizePx, this._borderPx, checkMatchBind);
               shape.setYTo(row);
               shape.setX(column);
               this.cells[row][column] = shape;
@@ -163,27 +173,51 @@ export default class Field extends PIXI.Container {
   }
 
 
-  onShapeClicked(e) {
-    if (this.isAnimating) return;
-    if (!e.target || !(e.target instanceof Shape)) return;
-    if (this.selected === null) {
-      this.selected = e.target;
-    } else if (this.selected === e.target) {
-      this.selected = null;
-    } else {
-      if (this.selected.isNeighbourTo(e.target)) {
-        this.swapShapes(this.selected, e.target);
-        const destroyed1 = this.destroyMatches(this.selected.row, this.selected.column);
-        const destroyed2 = this.destroyMatches(e.target.row, e.target.column);
-        if (!destroyed1.length && !destroyed2.length) {
-          this.swapShapes(this.selected, e.target);
-        } else {
-          const destroyed = destroyed1.concat(destroyed2);
-          this.fillEmptyes(destroyed);
-        }
-      }
-      this.selected = null;
+  // onShapeClicked(e) {
+  //   if (this.isAnimating) return;
+  //   if (!e.target || !(e.target instanceof Shape)) return;
+  //   if (this.selected === null) {
+  //     this.selected = e.target;
+  //   } else if (this.selected === e.target) {
+  //     this.selected = null;
+  //   } else {
+  //     if (this.selected.isNeighbourTo(e.target)) {
+  //       this.tryProccessMatch(this.selected, e.target);
+  //     }
+  //     this.selected = null;
+  //   }
+  // }
+
+
+  checkMatch(shape, offsetX, offsetY) {
+    let shape2 = null;
+    if (offsetX > this._cellSizePx/2) {
+      shape2 = this.getShape(shape.row, shape.column+1);
+    } else if (-offsetX > this._cellSizePx/2) {
+      shape2 = this.getShape(shape.row, shape.column-1);
+    } else if (offsetY > this._cellSizePx/2) {
+      shape2 = this.getShape(shape.row+1, shape.column);
+    } else if (-offsetY > this._cellSizePx/2) {
+      shape2 = this.getShape(shape.row-1, shape.column);
     }
+    if (shape2) {
+      return this.tryProccessMatch(shape, shape2);
+    }
+    return false;
+  }
+
+
+  tryProccessMatch(shape1, shape2) {
+    this.swapShapes(shape1, shape2);
+    const destroyed1 = this.destroyMatches(shape1.row, shape1.column);
+    const destroyed2 = this.destroyMatches(shape2.row, shape2.column);
+    if (!destroyed1.length && !destroyed2.length) {
+      this.swapShapes(shape1, shape2);
+      return false;
+    }
+    const destroyed = destroyed1.concat(destroyed2);
+    this.fillEmptyes(destroyed);
+    return true;
   }
 
   swapShapes(shape1, shape2) {
@@ -256,7 +290,7 @@ export default class Field extends PIXI.Container {
 
   scoreDestroyed(destroyedShapes) {
     if (destroyedShapes.length > 0) {
-      const destroyedScore = destroyedShapes.reduce((total, shapeDstr) => { 
+      const destroyedScore = destroyedShapes.reduce((total, shapeDstr) => {
         return total + ShapeTypeEnum.properties[shapeDstr.shapeType].rate;
       }, 0);
       this._scoreCallback(destroyedScore);

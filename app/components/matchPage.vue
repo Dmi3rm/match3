@@ -61,6 +61,8 @@ const borderPx = 2;
 const ROW_COUNT_MIN = 5;
 const COLUMN_COUNT_MIN = 5;
 const CELL_SIZE_MIN = 5;
+const ROW_COUNT_MAX = 30;
+const COLUMN_COUNT_MAX = 30;
 
 export default {
   data() {
@@ -87,8 +89,14 @@ export default {
       if (this.rowCount < ROW_COUNT_MIN) {
         this.rowCount = ROW_COUNT_MIN;
       }
+      if (this.rowCount > ROW_COUNT_MAX) {
+        this.rowCount = ROW_COUNT_MAX;
+      }
       if (this.columnCount < COLUMN_COUNT_MIN) {
         this.columnCount = COLUMN_COUNT_MIN;
+      }
+      if (this.columnCount > COLUMN_COUNT_MAX) {
+        this.columnCount = COLUMN_COUNT_MAX;
       }
     },
     setOptimalParams() {
@@ -106,6 +114,7 @@ export default {
       if (this.autoBoardSize)
       {
         this.setOptimalParams();
+        this.verifyInput();
       }
       else
       {
