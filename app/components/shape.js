@@ -4,7 +4,9 @@ import ShapeTypeEnum from './shapeTypes';
 class Shape extends PIXI.Sprite {
   constructor(shapeType, sidePx, borderPx, checkMatch) {
     const shapeTypeProps = ShapeTypeEnum.properties[shapeType];
-    super(PIXI.loader.resources[shapeTypeProps.image].texture);
+    const texture = PIXI.Texture.from(shapeTypeProps.image);
+    // super(PIXI.loader.resources[shapeTypeProps.image].texture);
+    super(texture);
     this.interactive = true;
     this.shapeType = shapeType;
     this.width = sidePx;
@@ -20,22 +22,18 @@ class Shape extends PIXI.Sprite {
     this.currY = 0;
     this.checkMatch = checkMatch;
     this
-      // events for drag start
       .on('mousedown', this.onDragStart)
       .on('touchstart', this.onDragStart)
-      // events for drag end
       .on('mouseup', this.onDragEnd)
       .on('mouseupoutside', this.onDragEnd)
       .on('touchend', this.onDragEnd)
       .on('touchendoutside', this.onDragEnd)
-      // events for drag move
       .on('mousemove', this.onDragMove)
       .on('touchmove', this.onDragMove);
   }
 
   onDragStart(event) {
-    // this.zIndex = 999999;
-    console.log(this.zIndex, this.zOrder);
+    this.zIndex = 1;
     this.data = event.data;
     this.dragging = true;
     this.currX = this.x;
@@ -44,13 +42,11 @@ class Shape extends PIXI.Sprite {
 
   onDragEnd() {
     if (this.dragging) {
-      // this.zIndex = 0;
+      this.zIndex = 0;
       this.dragging = false;
       this.data = null;
       const diffX = this.x - this.currX;
       const diffY = this.y - this.currY;
-      // console.log("x", this.x, this.currX, diffX);
-      // console.log("y", this.y, this.currY, diffY);
       if (!this.checkMatch(this, diffX, diffY)) {
         this.x = this.currX;
         this.y = this.currY;
@@ -63,18 +59,18 @@ class Shape extends PIXI.Sprite {
       const newPosition = this.data.getLocalPosition(this.parent);
       let newx = newPosition.x - this.width / 2;
       let newy = newPosition.y - this.height / 2;
-      const newx2 = (newx - this.currX) ** 2;
-      const newy2 = (newy - this.currY) ** 2;
-      if (newx2 > newy2) {
+      const offsetX = Math.abs(newx - this.currX);
+      const offsetY = Math.abs(newy - this.currY);
+      if (offsetX > offsetY) {
         this.y = this.currY;
-        if (newx2 > this.width ** 2) {
-          newx = this.currX + Math.sign(newx - this.currX)*this.width;
+        if (offsetX > this.width+this._borderPx) {
+          newx = this.currX + Math.sign(newx - this.currX)*(this.width+this._borderPx);
         }
         this.x = newx;
       } else {
         this.x = this.currX;
-        if (newy2 > this.height ** 2) {
-          newy = this.currY + Math.sign(newy - this.currY)*this.height;
+        if (offsetY > this.height+this._borderPx) {
+          newy = this.currY + Math.sign(newy - this.currY)*(this.height+this._borderPx);
         }
         this.y = newy;
       }

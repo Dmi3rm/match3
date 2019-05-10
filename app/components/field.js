@@ -16,6 +16,7 @@ export default class Field extends PIXI.Container {
     this.interactive = true;
     this.isAnimating = false;
     this.shapesToFall = null;
+    this.sortableChildren = true;
     // this.on('pointerdown', this.onShapeClicked);
     this.setup();
   }
@@ -91,7 +92,6 @@ export default class Field extends PIXI.Container {
           isFalling = true;
         }
       }
-
       if (!isFalling) {
         // all shapes just fallen down, check for matches
         let fallenByRow = this.shapesToFall.reduce((fallenMap, e) =>

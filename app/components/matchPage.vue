@@ -126,7 +126,9 @@ export default {
       this.scoreSpan = 0;
       const canvasHeightPx = this.rowCount * (this.cellSizePx + borderPx) + borderPx;
       const canvasWidthPx = this.columnCount * (this.cellSizePx + borderPx) + borderPx;
-      this.app = new PIXI.Application(canvasWidthPx, canvasHeightPx, {
+      this.app = new PIXI.Application({
+        width: canvasWidthPx,
+        height: canvasHeightPx,
         backgroundColor: 0x404040
       });
       this.$refs.stretchDiv.appendChild(this.app.view);
@@ -144,16 +146,7 @@ export default {
     }
   },
   mounted() {
-    PIXI.loader
-      .add(ShapeTypeEnum.properties[ShapeTypeEnum.CIRCLE].image)
-      .add(ShapeTypeEnum.properties[ShapeTypeEnum.TRIANGLE].image)
-      .add(ShapeTypeEnum.properties[ShapeTypeEnum.SQUARE].image)
-      .add(ShapeTypeEnum.properties[ShapeTypeEnum.PENTAGON].image)
-      .add(ShapeTypeEnum.properties[ShapeTypeEnum.HEXAGON].image)
-      .load(() => {
-        this.setOptimalParams();
-        this.setup();
-      });
+    this.setup();
   }
 };
 </script>
