@@ -13,7 +13,7 @@ class Shape extends PIXI.Sprite {
     this.height = sidePx;
     this._borderPx = borderPx;
     this._fallSpeed = 0;
-    this._acceleration = 0.15;
+    this._acceleration = 0.25;
     this.row = 0;
     this.column = 0;
     this.yto = 0;
